@@ -7,15 +7,13 @@ export interface Correspondence {
   date: string;
   status: string;
   referenceNumber: string;
-  // Responsible engineer name
   responsibleEngineer?: string;
-  // Attachment URL for PDF
   description?: string;
   originalAttachmentUrl?: string;
   replyAttachmentUrl?: string;
   category?: Category;
   reply?: string;
-  pdfUrl?: string;
+  pdfUrl?: string; // Kept for backward compatibility
   attachments?: { title: string; url: string; type: 'original' | 'reply' | 'other' }[];
 }
 

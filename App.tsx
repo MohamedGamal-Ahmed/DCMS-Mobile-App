@@ -11,9 +11,10 @@ const API_BASE = 'https://dcmschat.runasp.net';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>('home');
-  const [correspondences, setCorrespondences] = useState<Correspondence[]>(initialCorrespondences);
-  const [meetings, setMeetings] = useState<Meeting[]>(initialMeetings);
+  const [correspondences, setCorrespondences] = useState<Correspondence[]>([]);
+  const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [dataSaver, setDataSaver] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [stats, setStats] = useState<Stats>({ meetingsToday: 0, pendingIssues: 0, completedReports: 0 });
@@ -59,6 +60,7 @@ const App: React.FC = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
+        setError(null);
         const userId = user?.id;
         const url = userId
           ? `${API_BASE}/Mobile/GetData?userId=${userId}`
@@ -70,14 +72,19 @@ const App: React.FC = () => {
 
         if (response.ok) {
           const data: ApiResponse = await response.json();
-          setCorrespondences(data.correspondences);
-          setMeetings(data.meetings);
+          setCorrespondences(data.correspondences || []);
+          setMeetings(data.meetings || []);
           if (data.stats) setStats(data.stats);
         } else {
-          console.warn('Failed to fetch data, using mock data');
+          setError('فشل جلب البيانات من الخادم');
+          setCorrespondences([]);
+          setMeetings([]);
         }
-      } catch (error) {
-        console.error('Error fetching data:', error);
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setError('فشل الاتصال بالخادم. يرجى التأكد من اتصال الإنترنت.');
+        setCorrespondences([]);
+        setMeetings([]);
       } finally {
         setIsLoading(false);
       }
@@ -254,13 +261,34 @@ const App: React.FC = () => {
               </h2>
               <div className="w-10 h-1.5 bg-emerald rounded-full mt-1.5 shadow-sm shadow-emerald/10"></div>
             </div>
-            <MeetingsModule meetings={meetings} loading={isLoading} viewType="home" />
-            <div className="space-y-4">
-              <div className="px-5">
-                <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest border-r-4 border-emerald pr-3">المراسلات الأخيرة</h3>
+
+            {error ? (
+              <div className="mx-5 p-6 bg-red-50 border border-red-100 rounded-[32px] text-center space-y-4 shadow-sm animate-fade-in">
+                <div className="w-12 h-12 bg-red-100 rounded-2xl flex items-center justify-center text-red-600 mx-auto">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                </div>
+                <div>
+                  <h3 className="text-sm font-black text-red-900 mb-1">خطأ في جلب البيانات</h3>
+                  <p className="text-[11px] font-bold text-red-600/70">{error}</p>
+                </div>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="px-6 py-2.5 bg-red-600 text-white rounded-xl text-xs font-black shadow-lg shadow-red-200 active:scale-95 transition-all"
+                >
+                  إعادة المحاولة
+                </button>
               </div>
-              <SearchModule data={correspondences} loading={isLoading} onSelectItem={setSelectedItem} />
-            </div>
+            ) : (
+              <>
+                <MeetingsModule meetings={meetings} loading={isLoading} viewType="home" />
+                <div className="space-y-4">
+                  <div className="px-5">
+                    <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest border-r-4 border-emerald pr-3">المراسلات الأخيرة</h3>
+                  </div>
+                  <SearchModule data={correspondences} loading={isLoading} onSelectItem={setSelectedItem} />
+                </div>
+              </>
+            )}
           </main>
         );
       case 'agenda':
@@ -446,12 +474,12 @@ const App: React.FC = () => {
                       key={idx}
                       onClick={() => handleOpenPdf(att.url)}
                       className={`w-full h-18 bg-white border-2 p-4 rounded-2xl flex items-center justify-between transition-all shadow-sm active:scale-[0.98] ${att.type === 'original' ? 'border-emerald/20 hover:bg-emerald/5' :
-                          att.type === 'reply' ? 'border-blue-100 hover:bg-blue-50' : 'border-gray-100 hover:bg-gray-50'
+                        att.type === 'reply' ? 'border-blue-100 hover:bg-blue-50' : 'border-gray-100 hover:bg-gray-50'
                         }`}
                     >
                       <div className="flex items-center gap-4">
                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${att.type === 'original' ? 'bg-emerald/10 text-emerald' :
-                            att.type === 'reply' ? 'bg-blue-50 text-blue-600' : 'bg-gray-50 text-gray-400'
+                          att.type === 'reply' ? 'bg-blue-50 text-blue-600' : 'bg-gray-50 text-gray-400'
                           }`}>
                           {att.type === 'original' ? (
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
