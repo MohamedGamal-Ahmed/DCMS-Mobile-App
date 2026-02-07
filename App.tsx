@@ -7,7 +7,7 @@ import MeetingsModule from './components/MeetingsModule';
 
 type Tab = 'home' | 'agenda' | 'profile';
 
-const API_BASE = 'https://dcmschat.runasp.net';
+const API_BASE = 'https://unpredatory-perisarcous-jessenia.ngrok-free.dev';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>('home');
@@ -67,7 +67,13 @@ const App: React.FC = () => {
           : `${API_BASE}/Mobile/GetData`;
 
         const response = await fetch(url, {
-          headers: { 'Accept': 'application/json' }
+          headers: {
+            'Accept': 'application/json',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'ngrok-skip-browser-warning': '69420'
+          },
+          cache: 'no-store'
         });
 
         if (response.ok) {
@@ -109,7 +115,8 @@ const App: React.FC = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          'ngrok-skip-browser-warning': '69420'
         },
         body: JSON.stringify({
           username: loginUsername,
@@ -480,17 +487,23 @@ const App: React.FC = () => {
                       key={idx}
                       onClick={() => handleOpenPdf(att.url)}
                       className={`w-full h-18 bg-white border-2 p-4 rounded-2xl flex items-center justify-between transition-all shadow-sm active:scale-[0.98] ${att.type === 'original' ? 'border-emerald/20 hover:bg-emerald/5' :
-                        att.type === 'reply' ? 'border-blue-100 hover:bg-blue-50' : 'border-gray-100 hover:bg-gray-50'
+                        att.type === 'reply' ? 'border-blue-100 hover:bg-blue-50' :
+                          att.type === 'transfer' ? 'border-amber-100 hover:bg-amber-50' :
+                            'border-gray-100 hover:bg-gray-50'
                         }`}
                     >
                       <div className="flex items-center gap-4">
                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${att.type === 'original' ? 'bg-emerald/10 text-emerald' :
-                          att.type === 'reply' ? 'bg-blue-50 text-blue-600' : 'bg-gray-50 text-gray-400'
+                          att.type === 'reply' ? 'bg-blue-50 text-blue-600' :
+                            att.type === 'transfer' ? 'bg-amber-50 text-amber-600' :
+                              'bg-gray-50 text-gray-400'
                           }`}>
                           {att.type === 'original' ? (
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                           ) : att.type === 'reply' ? (
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" /></svg>
+                          ) : att.type === 'transfer' ? (
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
                           ) : (
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
                           )}
@@ -498,7 +511,10 @@ const App: React.FC = () => {
                         <div className="flex flex-col text-right">
                           <span className="text-sm font-black text-gray-900">{att.title}</span>
                           <span className="text-[10px] font-bold text-gray-400">
-                            {att.type === 'original' ? 'عرض المرفق الأساسي' : att.type === 'reply' ? 'عرض ملف الرد المباشر' : 'مرفق إضافي متاح للموضوع'}
+                            {att.type === 'original' ? 'عرض المرفق الأساسي' :
+                              att.type === 'reply' ? 'عرض ملف الرد المباشر' :
+                                att.type === 'transfer' ? 'عرض مرفق التأشيرة/التحويل' :
+                                  'مرفق إضافي متاح للموضوع'}
                           </span>
                         </div>
                       </div>
