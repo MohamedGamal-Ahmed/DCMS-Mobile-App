@@ -7,7 +7,8 @@ import MeetingsModule from './components/MeetingsModule';
 
 type Tab = 'home' | 'agenda' | 'profile';
 
-const API_BASE = 'https://unpredatory-perisarcous-jessenia.ngrok-free.dev';
+// امسح السطر القديم وحط ده مكانه:
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>('home');
