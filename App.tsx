@@ -8,7 +8,7 @@ import MeetingsModule from './components/MeetingsModule';
 type Tab = 'home' | 'agenda' | 'profile';
 
 // امسح السطر القديم وحط ده مكانه:
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://mr-mohamed-gamal.tail1acc6c.ts.net';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>('home');
@@ -71,8 +71,7 @@ const App: React.FC = () => {
           headers: {
             'Accept': 'application/json',
             'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'ngrok-skip-browser-warning': '69420'
+            'Pragma': 'no-cache'
           },
           cache: 'no-store'
         });
@@ -116,8 +115,7 @@ const App: React.FC = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'ngrok-skip-browser-warning': '69420'
+          'Accept': 'application/json'
         },
         body: JSON.stringify({
           username: loginUsername,

@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
     define: {
       'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
       'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-      'process.env.API_BASE_URL': JSON.stringify('https://unpredatory-perisarcous-jessenia.ngrok-free.dev')
+      'process.env.API_BASE_URL': JSON.stringify(env.VITE_API_URL || 'https://mr-mohamed-gamal.tail1acc6c.ts.net')
     },
     resolve: {
       alias: {
