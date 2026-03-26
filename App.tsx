@@ -7,8 +7,7 @@ import MeetingsModule from './components/MeetingsModule';
 
 type Tab = 'home' | 'agenda' | 'profile';
 
-// امسح السطر القديم وحط ده مكانه:
-const API_BASE = import.meta.env.VITE_API_URL || 'https://mr-mohamed-gamal.tail1acc6c.ts.net';
+import { apiClient, API_BASE } from './api';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>('home');
@@ -69,18 +68,7 @@ const App: React.FC = () => {
           ? `${API_BASE}/Mobile/GetData?userId=${userId}`
           : `${API_BASE}/Mobile/GetData`;
 
-        const token = localStorage.getItem('dcms_token');
-        const headers: Record<string, string> = {
-          'Accept': 'application/json',
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache'
-        };
-        if (token) {
-          headers['Authorization'] = `Bearer ${token}`;
-        }
-
-        const response = await fetch(url, {
-          headers,
+        const response = await apiClient(url, {
           cache: 'no-store'
         });
 
@@ -119,11 +107,10 @@ const App: React.FC = () => {
     setIsLoggingIn(true);
 
     try {
-      const response = await fetch(`${API_BASE}/Mobile/Login`, {
+      const response = await apiClient('/Mobile/Login', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           username: loginUsername,
