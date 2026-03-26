@@ -34,12 +34,14 @@ const App: React.FC = () => {
   // Check for saved user on mount
   useEffect(() => {
     const savedUser = localStorage.getItem('dcms_user');
+    const savedToken = localStorage.getItem('dcms_token');
     if (savedUser) {
       try {
         const parsedUser = JSON.parse(savedUser);
         setUser(parsedUser);
       } catch (e) {
         localStorage.removeItem('dcms_user');
+        localStorage.removeItem('dcms_token');
       }
     }
   }, []);
@@ -67,12 +69,18 @@ const App: React.FC = () => {
           ? `${API_BASE}/Mobile/GetData?userId=${userId}`
           : `${API_BASE}/Mobile/GetData`;
 
+        const token = localStorage.getItem('dcms_token');
+        const headers: Record<string, string> = {
+          'Accept': 'application/json',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache'
+        };
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+
         const response = await fetch(url, {
-          headers: {
-            'Accept': 'application/json',
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache'
-          },
+          headers,
           cache: 'no-store'
         });
 
@@ -128,6 +136,9 @@ const App: React.FC = () => {
       if (data.success && data.user) {
         setUser(data.user);
         localStorage.setItem('dcms_user', JSON.stringify(data.user));
+        if (data.accessToken) {
+          localStorage.setItem('dcms_token', data.accessToken);
+        }
         setActiveTab('home');
         setLoginUsername('');
         setLoginPassword('');
@@ -144,6 +155,7 @@ const App: React.FC = () => {
   const handleLogout = () => {
     setUser(null);
     localStorage.removeItem('dcms_user');
+    localStorage.removeItem('dcms_token');
     setActiveTab('profile');
   };
 
